@@ -1,23 +1,19 @@
 import React from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
-import { Outlet } from "react-router-dom";
 
-const Layout = () => {
+function Layout() {
+  const location = useLocation();
+  const hideFooter = location.pathname === "/chat"; // hide footer on chat page
+
   return (
     <>
-      {/* Top Navbar */}
       <Navbar />
-
-      {/* Page Content */}
-      <main style={{ minHeight: "calc(100vh - 160px)" }}>
-        <Outlet />
-      </main>
-
-      {/* Footer visible on all pages */}
-      <Footer />
+      <Outlet />
+      {!hideFooter && <Footer />} {/* show footer only if not in chat */}
     </>
   );
-};
+}
 
 export default Layout;

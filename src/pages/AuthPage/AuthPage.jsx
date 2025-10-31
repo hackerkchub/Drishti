@@ -1,62 +1,227 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import {
+  AuthContainer,
+  AuthLogo,
+  AuthCard,
+  AuthTabs,
+  AuthForm,
+  InputGroup,
+  ExtraOptions,
+  LoginButton,
+  SocialLogin,
+  SwitchText,
+} from "./AuthStyles";
+import {
+  FaUser,
+  FaLock,
+  FaEnvelope,
+  FaGoogle,
+  FaLinkedin,
+} from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import logo from "../../assets/drishti-logo.png";
 
-const AuthContainer = styled.div`
-  padding: 120px 20px;
-  display: flex;
-  justify-content: center;
-`;
-
-const FormWrapper = styled.div`
-  background: #fff;
-  padding: 40px;
-  border-radius: 16px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-  width: 400px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-`;
-
-const Button = styled.button`
-  width: 100%;
-  padding: 12px;
-  background: #4b6cff;
-  border: none;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-`;
-
-const Toggle = styled.p`
-  text-align: center;
-  margin-top: 15px;
-  color: #4b6cff;
-  cursor: pointer;
-`;
+// ✅ Firebase imports
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../../firebaseConfig";
+import { useNavigate } from "react-router-dom";
 
 const AuthPage = () => {
-  const [isSignup, setIsSignup] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+
+  // Handle Input Change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // ✅ Handle Email Auth
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (activeTab === "login") {
+        if (!formData.email || !formData.password) {
+          toast.error("Please enter email & password!");
+          return;
+        }
+
+        await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        toast.success("Login successful! 🎉");
+        navigate("/");
+      } else {
+        if (!formData.email || !formData.password) {
+          toast.error("Please fill all fields!");
+          return;
+        }
+
+        await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        toast.success("Account created successfully! 🚀");
+        setActiveTab("login");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  // ✅ Handle Google Login
+  const handleGoogleLogin = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
+      toast.success("Logged in with Google ✅");
+      navigate("/");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <AuthContainer>
-      <FormWrapper>
-        <h2>{isSignup ? "Sign Up" : "Sign In"}</h2>
-        {isSignup && <Input placeholder="Full Name" />}
-        <Input placeholder="Email" type="email" />
-        <Input placeholder="Password" type="password" />
-        <Button>{isSignup ? "Create Account" : "Login"}</Button>
-        <Toggle onClick={() => setIsSignup(!isSignup)}>
-          {isSignup
-            ? "Already have an account? Sign In"
-            : "Don't have an account? Sign Up"}
-        </Toggle>
-      </FormWrapper>
+      <ToastContainer position="top-right" autoClose={2000} />
+
+      {/* Logo */}
+      <AuthLogo>
+        <img src={logo} alt="Drishti Logo" />
+      </AuthLogo>
+
+      <AuthCard>
+        {/* Tabs */}
+        <AuthTabs>
+          <button
+            className={activeTab === "login" ? "active" : ""}
+            onClick={() => setActiveTab("login")}
+          >
+            LOGIN
+          </button>
+          <button
+            className={activeTab === "register" ? "active" : ""}
+            onClick={() => setActiveTab("register")}
+          >
+            REGISTER
+          </button>
+        </AuthTabs>
+
+        {/* Login Form */}
+        {activeTab === "login" && (
+          <AuthForm onSubmit={handleSubmit}>
+            <InputGroup>
+              <FaEnvelope className="icon" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <FaLock className="icon" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <ExtraOptions>
+              <label>
+                <input type="checkbox" /> Remember Me
+              </label>
+              <a href="#">Forgot Password?</a>
+            </ExtraOptions>
+
+            <LoginButton type="submit">LOG IN</LoginButton>
+
+            <SocialLogin>
+              <FaGoogle className="google" onClick={handleGoogleLogin} />
+              <FaLinkedin
+                className="linkedin"
+                onClick={() =>
+                  toast.info("LinkedIn login requires backend OAuth setup.")
+                }
+              />
+            </SocialLogin>
+
+            <SwitchText>
+              Don’t have an account?{" "}
+              <a onClick={() => setActiveTab("register")}>Register now</a>
+            </SwitchText>
+          </AuthForm>
+        )}
+
+        {/* Register Form */}
+        {activeTab === "register" && (
+          <AuthForm onSubmit={handleSubmit}>
+            <InputGroup>
+              <FaUser className="icon" />
+              <input
+                type="text"
+                name="username"
+                placeholder="Full Name"
+                value={formData.username}
+                onChange={handleChange}
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <FaEnvelope className="icon" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <InputGroup>
+              <FaLock className="icon" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+
+            <LoginButton type="submit">REGISTER</LoginButton>
+
+            <SocialLogin>
+              <FaGoogle className="google" onClick={handleGoogleLogin} />
+              <FaLinkedin
+                className="linkedin"
+                onClick={() =>
+                  toast.info("LinkedIn login requires backend OAuth setup.")
+                }
+              />
+            </SocialLogin>
+
+            <SwitchText>
+              Already have an account?{" "}
+              <a onClick={() => setActiveTab("login")}>Login now</a>
+            </SwitchText>
+          </AuthForm>
+        )}
+      </AuthCard>
     </AuthContainer>
   );
 };

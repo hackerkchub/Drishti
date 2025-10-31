@@ -2,7 +2,9 @@ import React from "react";
 import {
   Nav,
   NavContainer,
-  Logo,
+  LogoWrapper,
+  LogoImage,
+  LogoText,
   MenuLinks,
   MenuLink,
   IconGroup,
@@ -10,25 +12,41 @@ import {
   MobileMenu,
   MobileLink,
 } from "./NavbarStyles";
-import { FaWallet, FaSearch, FaLanguage, FaHome, FaPhoneAlt, FaComments, FaUserPlus, FaHeadset, FaInfoCircle } from "react-icons/fa";
 
+import {
+  FaWallet,
+  FaSearch,
+  FaLanguage,
+  FaHome,
+  FaUserPlus,
+  FaHeadset,
+  FaInfoCircle,
+} from "react-icons/fa";
+
+import logo from "../../assets/drishti-logo.png";
 const Navbar = () => {
   return (
     <>
       {/* 🔹 Top Navbar */}
       <Nav>
         <NavContainer>
-          <Logo to="/">Drishti</Logo>
+          {/* 🔸 Logo section */}
+          <LogoWrapper to="/">
+            <LogoImage src={logo} alt="Drishti Logo" />
+            <LogoText>Drishti</LogoText>
+          </LogoWrapper>
 
+          {/* 🔸 Main menu */}
           <MenuLinks>
             <MenuLink to="/">Home</MenuLink>
             <MenuLink to="/about">About</MenuLink>
             <MenuLink to="/wallet">Wallet</MenuLink>
             <MenuLink to="/profile">Profile</MenuLink>
-            <MenuLink to="/auth">Sign In / Up</MenuLink>
+            <MenuLink to="/auth">Sign In </MenuLink>
             <MenuLink to="/contact">Contact</MenuLink>
           </MenuLinks>
 
+          {/* 🔸 Icon section */}
           <IconGroup>
             <IconButton><FaWallet /></IconButton>
             <IconButton><FaSearch /></IconButton>
@@ -53,7 +71,7 @@ const Navbar = () => {
         </MobileLink>
         <MobileLink to="/auth">
           <FaUserPlus />
-          <span>Auth</span>
+          <span>Sign-In</span>
         </MobileLink>
         <MobileLink to="/contact">
           <FaHeadset />

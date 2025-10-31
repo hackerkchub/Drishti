@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { FaPhoneAlt, FaComments, FaHeadset } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 
 const ContactContainer = styled.div`
   padding: 120px 20px;
@@ -30,12 +31,21 @@ const Button = styled.button`
   border-radius: 10px;
   cursor: pointer;
   margin-top: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.3s;
   &:hover {
     background: #324ed6;
   }
 `;
 
 const ContactPage = () => {
+  const navigate = useNavigate(); // ✅ React Router hook for navigation
+
+  const handleStartChat = () => {
+    navigate("/chat"); // ✅ Redirect to Chat page
+  };
+
   return (
     <ContactContainer>
       <h1>Contact & Support</h1>
@@ -51,7 +61,7 @@ const ContactPage = () => {
         <Icon><FaComments /></Icon>
         <h3>Live Chat</h3>
         <p>Chat with a support agent in real time.</p>
-        <Button>Start Chat</Button>
+        <Button onClick={handleStartChat}>Start Chat</Button> {/* ✅ Redirects to chat */}
       </Section>
 
       <Section>

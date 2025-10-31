@@ -21,11 +21,23 @@ export const NavContainer = styled.div`
   margin: auto;
 `;
 
-export const Logo = styled(NavLink)`
+/* 🔹 Add Logo Image Support */
+export const LogoWrapper = styled(NavLink)`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+`;
+
+export const LogoImage = styled.img`
+  height: 45px;
+  width: auto;
+`;
+
+export const LogoText = styled.span`
   font-size: 1.8rem;
   font-weight: bold;
   color: #ffd700;
-  text-decoration: none;
   transition: 0.3s;
   &:hover {
     color: #ffcc00;
